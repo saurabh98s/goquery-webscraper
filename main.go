@@ -17,11 +17,11 @@ type Article struct {
 func getAricles() []Article {
 	var articles []Article
 
-	doc, err := goquery.NewDocument("http://b.hatena.ne.jp/ctop/it")
+	doc, err := goquery.NewDocument("https://www.sec.gov/cgi-bin/browse-edgar?CIK=AAPL&owner=exclude&action=getcompany&Find=Search")
 	if err != nil {
 		fmt.Print("url scarapping failed")
 	}
-	doc.Find(".entry-link").Each(func(num int, s *goquery.Selection) {
+	doc.Find("a").Each(func(num int, s *goquery.Selection) {
 		title, _ := s.Attr("title")
 		url, _ := s.Attr("href")
 		article := Article{Title: title, URL: url}
@@ -42,5 +42,12 @@ func encodeArticlesToJSON(articles []Article) []byte {
 func main() {
 	articles := getAricles()
 	articlesJSON := encodeArticlesToJSON(articles)
+	var parsed []Article
+	json.Unmarshal(articlesJSON,&parsed)
+	for i := 0; i < 10; i++ {
+		fmt.Println(parsed[i].URL)	
+	}
+	
+	
 	ioutil.WriteFile("articles.json", articlesJSON, os.ModePerm)
 }
